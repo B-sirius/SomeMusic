@@ -1,26 +1,49 @@
 'use strict';
+// 丑陋的fix
+let isPc = () => {
+    var u = navigator.userAgent;
+
+    var browser = {
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.Mobile./), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), // ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+        iPad: u.indexOf('iPad') > -1, //是否iPad
+        webApp: u.indexOf('Safari') == -1 //是否web应该程序，没有头部与底部
+    }
+
+    if (browser.mobile || browser.ios || browser.android ||
+        browser.iPhone || browser.iPad) {
+        return false;
+    }
+
+    return true;
+}
 
 // 生成将要被vue实例挂载的dom元素
-let musicContainer = document.createElement('div');
+const musicContainer = document.createElement('div');
 document.body.appendChild(musicContainer);
 
 // 从showapi获得的数据
-const originalMusicList = [
-    {
-        m4a: "http://ws.stream.qqmusic.qq.com/3625900.m4a?fromtag=46",
-        media_mid: "001UdxMS2JsEgq",
-        songid: 3625900,
-        singerid: 16102,
-        albumname: "星际牛仔-Cowboy BeBop",
-        downUrl: "http://dl.stream.qqmusic.qq.com/3625900.m4a?vkey=0103C443DAF06013491687F85A9DF4E9E32C84CE384159864FEF269DC9D59B91FAEBB876E580641C7339FCB7109778CA4D05FE1CC3E774BC&guid=2718671044",
-        singername: "菅野よう子",
-        songname: "Call me call me",
-        strMediaMid: "001UdxMS2JsEgq",
-        albummid: "000CyufG29BlsG",
-        songmid: "000JnyR72WX0uV",
-        albumpic_big: "http://i.gtimg.cn/music/photo/mid_album_300/s/G/000CyufG29BlsG.jpg",
-        albumpic_small: "http://i.gtimg.cn/music/photo/mid_album_90/s/G/000CyufG29BlsG.jpg",
-        albumid: 307672
+let originalMusicList = [{
+        m4a: "http://ws.stream.qqmusic.qq.com/2568874.m4a?fromtag=46",
+        media_mid: "004OtwLG0fJRaN",
+        songid: 2568874,
+        singerid: 16779,
+        albumname: "THE DAY OF SECOND IMPACT",
+        downUrl: "http://dl.stream.qqmusic.qq.com/2568874.m4a?vkey=402D9F6D797FE1D6E5CA289A952888B37F6D4A7797B1BC1194161C42E8E765DBD8AF32762A09969C60AB61ED112A50906FA330E1353D056B&guid=2718671044",
+        singername: "Original Soundtrack",
+        songname: "Komm，susser Tod(M-10　Director’s　Edit.Version)",
+        strMediaMid: "004OtwLG0fJRaN",
+        albummid: "004PHqBD2cggMU",
+        songmid: "004OtwLG0fJRaN",
+        albumpic_big: "http://i.gtimg.cn/music/photo/mid_album_300/M/U/004PHqBD2cggMU.jpg",
+        albumpic_small: "http://i.gtimg.cn/music/photo/mid_album_90/M/U/004PHqBD2cggMU.jpg",
+        albumid: 204813
     },
     {
         m4a: "http://ws.stream.qqmusic.qq.com/1464920.m4a?fromtag=46",
@@ -39,6 +62,22 @@ const originalMusicList = [
         albumid: 118682
     },
     {
+        m4a: "http://ws.stream.qqmusic.qq.com/4835690.m4a?fromtag=46",
+        media_mid: "002yoqOS4gKufY",
+        songid: 4835690,
+        singerid: 16102,
+        albumname: "菅野洋子-COWBOY BEBOP TANK THE BEST",
+        downUrl: "http://dl.stream.qqmusic.qq.com/4835690.m4a?vkey=402D9F6D797FE1D6E5CA289A952888B37F6D4A7797B1BC1194161C42E8E765DBD8AF32762A09969C60AB61ED112A50906FA330E1353D056B&guid=2718671044",
+        singername: "菅野よう子",
+        songname: "Gotta knock a little harder",
+        strMediaMid: "002yoqOS4gKufY",
+        albummid: "00052pGI2Qbw6w",
+        songmid: "002yoqOS4gKufY",
+        albumpic_big: "http://i.gtimg.cn/music/photo/mid_album_300/6/w/00052pGI2Qbw6w.jpg",
+        albumpic_small: "http://i.gtimg.cn/music/photo/mid_album_90/6/w/00052pGI2Qbw6w.jpg",
+        albumid: 63090
+    },
+    {
         m4a: "http://ws.stream.qqmusic.qq.com/102703372.m4a?fromtag=46",
         media_mid: "003i6FOD3x9aWZ",
         songid: 102703372,
@@ -53,7 +92,7 @@ const originalMusicList = [
         albumpic_big: "http://i.gtimg.cn/music/photo/mid_album_300/c/2/0034zJRW2Gnic2.jpg",
         albumpic_small: "http://i.gtimg.cn/music/photo/mid_album_90/c/2/0034zJRW2Gnic2.jpg",
         albumid: 140753
-    }
+    },
 ];
 
 // api返回的数据格式的适配器
@@ -66,14 +105,27 @@ const musicListAdapter = item => {
         albumpic_small: albumpic,
     } = item;
 
-    return {id, singername, songname, m4a, albumpic};
+    return {
+        id,
+        singername,
+        songname,
+        m4a,
+        albumpic
+    };
 }
 
 // 创建构造器
 let Player = Vue.extend({
     template: `
-    <div class="someMusic-wrapper">
-        <div class="someMusic-cover"></div>
+    <div class="someMusic-wrapper fixed">
+        <a class="someMusic-active-btn" href="javascript:">
+            <div class="equalizer" :class="{active: isActive}">
+                <div class="bar left"></div>
+                <div class="bar center"></div>
+                <div class="bar right"></div>
+            </div>
+        </a>
+        <div class="someMusic-cover" :style="{backgroundImage: 'url(' + currAlbumSrc + ')'}"></div>
         <div class="someMusic-info-wrapper">
             <p class="title-wrapper">
                 <span>{{currSong.songname}}</span>
@@ -81,12 +133,12 @@ let Player = Vue.extend({
                 <span>{{currSong.singername}}</span>
             </p>
             <div class="progress_bar">
-                <div class="progress" style="width: 50%"></div>
+                <div class="progress" :style="{width: progressPercent + '%'}"></div>
             </div>
             <div class="controller-wrapper">
-                <a class="controller skip_previous" href="javascript:" @click="nextSong"></a>
+                <a class="controller skip_previous" href="javascript:" @click="previousSong"></a>
                 <a class="controller" :class="stateClass" href="javascript:" @click="toggleSongState"></a>
-                <a class="controller skip_next" href="javascript:" @click="previousSong"></a>
+                <a class="controller skip_next" href="javascript:" @click="nextSong"></a>
             </div>
         </div>
         <audio ref="audio" :src="currSong.m4a"></audio>
@@ -95,26 +147,64 @@ let Player = Vue.extend({
     data: function () {
         return {
             musicList: [],
-            currIndex: 2,
+            currIndex: 0,
+            currAlbumSrc: 'http://7xrkxs.com1.z0.glb.clouddn.com/someMusic/annoyingdog_128px.jpg',
+            defaultAlbumSrc: 'http://7xrkxs.com1.z0.glb.clouddn.com/someMusic/annoyingdog_128px.jpg',
             songState: 'pause',
             stateHandler: {
                 pause() {
                     this.songState = 'play';
+                    this.progressIntervalId = setInterval(() => {
+                        this._updateProgress();
+                    }, 1000);
                 },
                 play() {
                     this.songState = 'pause';
+                    clearInterval(this.progressIntervalId);
+                    this.progressIntervalId = null;
                 }
-            }
+            },
+            progressIntervalId: null,
+            progressPercent: 0,
         }
     },
     methods: {
-        updateMusicList(originList) {
+        _updateMusicList(originList) {
             let newList = originList.map((item) => {
                 return musicListAdapter(item);
             });
 
             this.musicList = [...this.musicList, ...newList];
-            console.log(this.musicList);
+        },
+        _updateAudioState() {
+            if (this.songState === 'pause') {
+                this.$refs.audio.pause();
+            } else if (this.songState === 'play') {
+                this.$refs.audio.play();
+            }
+        },
+        _updateAlbumPic() {
+            let img = new Image();
+            img.src = this.currSong.albumpic;
+
+            let setAlbumSrc = new Promise((resolve, reject) => {
+                img.onload = () => resolve();
+                img.onerror = () => reject();
+            });
+
+            setAlbumSrc.then(() => {
+                this.currAlbumSrc = img.src;
+            }, () => {
+                this.currAlbumSrc = this.defaultAlbumSrc;
+            });
+        },
+        _updateProgress() {
+            let percent = this.$refs.audio.currentTime / this.$refs.audio.duration;
+            this.progressPercent = Math.round(percent * 100);
+
+            if (percent === 1) {
+                this.nextSong();
+            }
         },
         toggleSongState() {
             this.stateHandler[this.songState].call(this);
@@ -124,10 +214,11 @@ let Player = Vue.extend({
         },
         previousSong() {
             this.currIndex = this.currIndex - 1 >= 0 ? this.currIndex - 1 : this.musicList.length - 1;
-        }
+        },
     },
     created() {
-        this.updateMusicList(originalMusicList);
+        this._updateMusicList(originalMusicList);
+        this._updateAlbumPic();
     },
     computed: {
         currSong() {
@@ -140,13 +231,31 @@ let Player = Vue.extend({
                 return 'pause';
             }
         },
+        isActive() {
+            if (this.songState === 'pause') {
+                return false;
+            } else if (this.songState === 'play') {
+                return true;
+            }
+        }
     },
     watch: {
+        // 播放状态改变，需要更新音频播放状态
         songState() {
-            this.$refs.audio[this.songState]();
+            this._updateAudioState();
+        },
+        // 歌曲改变，需要在audio实例改编后更新播放状态
+        currSong() {
+            this.$nextTick().then(() => {
+                this._updateAudioState();
+                this._updateProgress();
+                this._updateAlbumPic();
+            });
         }
     }
 });
 
-// 创建 music 实例，并挂载到元素上。
-new Player().$mount(musicContainer);
+if (isPc()) {
+    // 创建 music 实例，并挂载到元素上。
+    new Player().$mount(musicContainer);
+}

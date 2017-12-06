@@ -1,23 +1,96 @@
+.equalizer {
+    position: relative;
+    width: 24px;
+    height: 24px;
+}
+
+.equalizer .bar {
+    position: absolute;
+    width: 6px;
+    bottom: 0;
+    background: rgb(173, 173, 173);
+}
+
+.equalizer .bar.left {
+    left: 0;
+    height: 8px;
+}
+
+.equalizer .bar.center {
+    left: calc(50% - 3px);
+    height: 24px;
+}
+
+.equalizer .bar.right {
+    right: 0;
+    height: 16px;
+}
+
+.equalizer.active .bar.left {
+    animation: wave 0.8s 0.2s infinite;
+}
+
+.equalizer.active .bar.center {
+    animation: wave 0.8s infinite;
+}
+
+.equalizer.active .bar.right {
+    animation: wave 0.8s 0.5s infinite;
+}
+
+@keyframes wave {
+    0% {
+        height: 0;
+    }
+    50% {
+        height: 24px;
+    }
+    100% {
+        height: 0;
+    }
+}
+
 .someMusic-wrapper {
     font-family: Arial, Helvetica, sans-serif;
     display: flex;
     box-sizing: border-box;
-    padding: 5px;
-    width: 240px;
+    padding: 7px;
+    width: 280px;
     height: 70px;
     background: rgba(10, 10, 10, 0.5);
 }
 
+.someMusic-wrapper.fixed {
+    position: fixed;
+    top: 70px;
+    right: calc((44px - 280px));
+    transition: right 0.4s;
+    z-index: 999;
+}
+
+.someMusic-wrapper.fixed:hover {
+    right: 0;
+}
+
+.someMusic-wrapper .someMusic-active-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-basis: 30px;
+    margin-right: 7px;
+    cursor: default;
+}
+
 .someMusic-wrapper .someMusic-cover {
-    background: #000;
+    background-size: cover;
     flex-basis: 60px;
     flex-shrink: 0;
-    margin-right: 5px;
+    margin-right: 8px;
 }
 
 .someMusic-wrapper .someMusic-info-wrapper {
     display: flex;
-    width: calc(100% - 60px - 5px);
+    width: calc(100% - 60px - 30px - 8px - 7px);
     flex-direction: column;
 }
 
@@ -43,7 +116,7 @@
 .someMusic-info-wrapper .progress_bar .progress {
     position: absolute;
     height: 2px;
-    background: rgb(163, 29, 253);
+    background: rgb(29, 253, 85);
 }
 
 .someMusic-info-wrapper .controller-wrapper {
